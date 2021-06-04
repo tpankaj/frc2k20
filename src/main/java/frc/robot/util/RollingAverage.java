@@ -7,6 +7,9 @@
 
 package frc.robot.util;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * Add your docs here.
  */
@@ -14,20 +17,19 @@ public class RollingAverage {
 
     private int size;
     private double sum;
-    private double [] arr;
+    private Queue<Double> queue;
 
     public RollingAverage(int _size){
         size = _size;
-        arr = new double[size];
+        queue = new LinkedList<>();
         sum = 0;
     }
 
     public void add(double x){
-        sum -= arr[0];
-        for(int i = 0; i < size-1; i++){
-            arr[i] = arr[i+1];
+        if (queue.size() >= size) {
+            sum -= queue.remove();
         }
-        arr[size-1] = x;
+        queue.add(x);
         sum+=x;
     }
 
@@ -36,15 +38,13 @@ public class RollingAverage {
     }
 
     public void reset(){
-        for(int i = 0; i < size; i ++){
-           arr[i] = 0; 
-        }
+        queue = new LinkedList<>();
         sum = 0;
     }
 
     public boolean allWithinError(double target, double acceptableError){
-        for(int i = 0; i < size; i ++){
-            if(Math.abs(arr[i]- target) > acceptableError)
+        for (Double val : queue) {
+            if(Math.abs(val - target) > acceptableError)
                 return false; 
          }
 
